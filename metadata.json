@@ -1,0 +1,6 @@
+{
+  "name": "SOMMA Hub",
+  "description": "Ecossistema atlético de alta performance para treinos, evolução de cargas, comunidade e acompanhamento profissional.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
