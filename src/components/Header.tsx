@@ -47,9 +47,9 @@ export const Header: React.FC<HeaderProps> = ({
           <button 
             onClick={() => onNavigate('inicio')}
             className="flex items-center focus:outline-none group text-left hover:opacity-85 transition-opacity cursor-pointer shrink-0"
-            aria-label="SOMMA Hub"
+            aria-label="SOMMA+"
           >
-            <SommaLogo variant="full" className="h-6 w-auto" />
+            <SommaLogo variant="full" className="h-8 sm:h-9 w-auto shrink-0 object-contain" />
           </button>
         </div>
 
@@ -69,12 +69,12 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             aria-label="Perfil do Atleta"
             onClick={() => onNavigate('perfil')}
-            className="w-10 h-10 flex items-center justify-center rounded-full ring-1 ring-transparent hover:ring-[#0066ff] transition-all cursor-pointer"
+            className="w-10 h-10 flex items-center justify-center rounded-full ring-1 ring-transparent hover:ring-[#0066ff] transition-all cursor-pointer overflow-hidden shrink-0"
           >
             <img
               src={avatarUrl}
               alt={`Foto de perfil de ${userName}`}
-              className="w-8 h-8 rounded-full object-cover bg-[#1c2025]"
+              className="w-8 h-8 rounded-full object-cover shrink-0 block bg-[#1c2025]"
             />
           </button>
         </div>

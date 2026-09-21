@@ -41,7 +41,7 @@ export const ActiveWorkoutCelebrationModal: React.FC<ActiveWorkoutCelebrationMod
         </span>
         <h3 className="text-2xl font-black text-white mt-1">{workoutName}</h3>
         <p className="text-xs text-[#8c90a1] mt-1 max-w-xs leading-relaxed">
-          Treino finalizado com sucesso e salvo no seu perfil SOMMA Hub.
+          Treino finalizado com sucesso e salvo no seu perfil SOMMA+.
         </p>
 
         {/* 4 Stat Cards */}

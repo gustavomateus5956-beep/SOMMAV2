@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Dumbbell, Lock, Mail, User, ArrowRight, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Lock, Mail, User, ArrowRight, Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useUser } from '../context/UserContext';
+import { SommaLogo } from './SommaLogo';
 
 export const AuthView: React.FC = () => {
   const { login, register } = useUser();
@@ -120,12 +121,9 @@ export const AuthView: React.FC = () => {
     <div className="min-h-screen w-full bg-[#101419] text-[#e0e2ea] flex flex-col justify-center items-center px-4 py-8 font-sans antialiased">
       {/* Brand Header */}
       <div className="w-full max-w-[400px] flex flex-col items-center text-center mb-6">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#0052cc] to-[#0066ff] flex items-center justify-center shadow-lg shadow-[#0066ff]/20 mb-3 border border-[#0066ff]/40">
-          <Dumbbell className="w-7 h-7 text-white" />
+        <div className="mb-3 flex items-center justify-center">
+          <SommaLogo variant="full" className="h-10 w-auto" />
         </div>
-        <h1 className="text-2xl font-black tracking-tight text-white flex items-center gap-1.5">
-          SOMMA <span className="text-[#0066ff] font-extrabold text-sm uppercase px-2 py-0.5 bg-[#0066ff]/15 rounded-md border border-[#0066ff]/30">HUB</span>
-        </h1>
         <p className="text-xs text-[#8c90a1] mt-1.5 max-w-[280px]">
           Plataforma de alta performance e acompanhamento atlético profissional
         </p>
@@ -326,7 +324,7 @@ export const AuthView: React.FC = () => {
 
       {/* Footer Info */}
       <div className="text-[11px] text-[#5a5f70] mt-6 text-center">
-        <span>SOMMA Hub &bull; Sessão segura em dispositivo local</span>
+        <span>SOMMA+ &bull; Sessão segura em dispositivo local</span>
       </div>
     </div>
   );

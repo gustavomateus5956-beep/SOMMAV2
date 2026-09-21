@@ -50,7 +50,7 @@ export const ExportCardModal: React.FC<ExportCardModalProps> = ({ workoutData, o
   const authorAvatar = workoutData.authorAvatar || 'https://lh3.googleusercontent.com/aida/AEtjO1URm0XDVMSrJNRDc_1GLuvyv0l5c4j4WEL9rP3UPflZRz5H1m9TZPGBMK00H335edXtA8GKJ3D11CB0zoo-_xT8BX4Of8ILIXCOvazguboO4Lw5pTVsG7iJggnbin_E1GWeZ841ZBSPfxaiVabJ12AEsVjplJzt2l3sdqKXs6S9GfMO-qHvR_UCqAjtllBiVgbQolwJ6Cwt3wA0KGJybX7eKNw07aG_W4HSTR08k3vGpETwMxoMon6YKB-UxRSpFwJWPCD7sWLk24k';
 
   const handleCopySummary = () => {
-    const text = `🔥 Treino finalizado no SOMMA Hub!\n🏋️ ${workoutData.title}\n⏱️ Duração: ${workoutData.duration} | Volume Total: ${workoutData.volume}\n🏆 Séries: ${workoutData.completedSets} | ${workoutData.prsCount > 0 ? `+${workoutData.prsCount} PRs batidos!` : 'Treino 100% cumprido'}\n\n#SOMMAHub #Musculação #TreinoConcluído`;
+    const text = `🔥 Treino finalizado na SOMMA+!\n🏋️ ${workoutData.title}\n⏱️ Duração: ${workoutData.duration} | Volume Total: ${workoutData.volume}\n🏆 Séries: ${workoutData.completedSets} | ${workoutData.prsCount > 0 ? `+${workoutData.prsCount} PRs batidos!` : 'Treino 100% cumprido'}\n\n#SOMMAPlus #Musculação #TreinoConcluído`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
@@ -63,8 +63,8 @@ export const ExportCardModal: React.FC<ExportCardModalProps> = ({ workoutData, o
     
     if (navigator.share) {
       navigator.share({
-        title: `Meu treino SOMMA: ${workoutData.title}`,
-        text: `Acabei de finalizar ${workoutData.title} com ${workoutData.volume} no SOMMA Hub!`,
+        title: `Meu treino SOMMA+: ${workoutData.title}`,
+        text: `Acabei de finalizar ${workoutData.title} com ${workoutData.volume} na SOMMA+!`,
         url: window.location.href,
       }).catch(() => {});
     }
@@ -275,9 +275,7 @@ export const ExportCardModal: React.FC<ExportCardModalProps> = ({ workoutData, o
             {/* Top Brand Bar */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2 py-1 rounded-lg border border-white/10">
-                <SommaLogo variant="icon" className="h-4 w-auto" />
-                <span className="text-[10px] font-black tracking-wider text-white">SOMMA</span>
-                <span className="text-[8px] font-bold text-[#8c90a1] tracking-widest uppercase">HUB</span>
+                <SommaLogo variant="full" className="h-4 w-auto" />
               </div>
 
               <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#0066ff]/80 backdrop-blur-md text-[9px] font-black text-white shadow-md">
@@ -351,7 +349,7 @@ export const ExportCardModal: React.FC<ExportCardModalProps> = ({ workoutData, o
                 />
                 <span className="text-[10px] font-bold text-white">{authorName}</span>
               </div>
-              <span className="text-[8px] text-[#8c90a1] tracking-wider">@somma.hub</span>
+              <span className="text-[8px] text-[#8c90a1] tracking-wider">@somma.mais</span>
             </div>
           </div>
         </div>

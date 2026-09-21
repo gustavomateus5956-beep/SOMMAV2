@@ -198,7 +198,7 @@ export const ProfessionalDetailModal: React.FC<ProfessionalDetailModalProps> = (
 
                 <div className="flex flex-col min-w-0">
                   <span className="text-xs font-bold text-white">
-                    {professional.prescriptionSummary || 'Acompanhamento integrado no SOMMA Hub'}
+                    {professional.prescriptionSummary || 'Acompanhamento integrado na SOMMA+'}
                   </span>
                   <span className="text-[11px] text-[#8c90a1] mt-0.5">
                     Próximo check-in: {professional.nextCheckInDate || 'Esta semana'}

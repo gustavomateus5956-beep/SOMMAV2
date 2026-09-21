@@ -170,7 +170,7 @@ export const ProfessionalChatModal: React.FC<ProfessionalChatModalProps> = ({
               <div className="flex items-center gap-1.5 text-[11px] text-[#8c90a1]">
                 <span className="text-[#0066ff] font-semibold">{professional.registration}</span>
                 <span>•</span>
-                <span className="text-[#4edea3] font-medium">Online no SOMMA Hub</span>
+                <span className="text-[#4edea3] font-medium">Online na SOMMA+</span>
               </div>
             </div>
           </div>

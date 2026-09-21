@@ -237,7 +237,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({ onBack }) => {
               <Flame className="w-4 h-4 text-[#cc4204]" />
               <h4 className="text-sm font-bold text-white">Publicações em Alta na Comunidade</h4>
             </div>
-            <span className="text-xs text-[#8c90a1]">Tendências do SOMMA Hub</span>
+            <span className="text-xs text-[#8c90a1]">Tendências da SOMMA+</span>
           </div>
         </div>
       )}

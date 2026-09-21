@@ -572,7 +572,7 @@ export const ProfessionalsView: React.FC<ProfessionalsViewProps> = ({
       <div className="p-4 rounded-2xl bg-[#181c21] border border-[#262a30] flex items-center gap-3">
         <ShieldCheck className="w-6 h-6 text-[#4edea3] shrink-0" />
         <div className="flex flex-col">
-          <span className="text-xs font-bold text-white">Validação Técnica SOMMA Hub</span>
+          <span className="text-xs font-bold text-white">Validação Técnica SOMMA+</span>
           <span className="text-[11px] text-[#8c90a1] leading-tight mt-0.5">
             Garantia de 1 profissional de referência por área com conselho regional ativo (CREF, CRN, CREFITO) e alinhamento biomecânico em tempo real.
           </span>

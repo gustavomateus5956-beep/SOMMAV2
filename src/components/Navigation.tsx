@@ -26,7 +26,7 @@ export const Navigation: React.FC<NavigationProps> = ({ currentTab, onNavigate }
           <button
             onClick={() => onNavigate('inicio')}
             className="flex items-center focus:outline-none hover:opacity-90 transition-opacity cursor-pointer"
-            aria-label="Ir para a tela inicial do SOMMA Hub"
+            aria-label="Ir para a tela inicial da SOMMA+"
           >
             <SommaLogo variant="full" className="h-8 w-auto" />
           </button>

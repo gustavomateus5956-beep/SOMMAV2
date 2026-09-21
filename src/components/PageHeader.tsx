@@ -12,7 +12,7 @@ interface PageHeaderProps {
 }
 
 /**
- * Standardized Page Header for SOMMA Hub views.
+ * Standardized Page Header for SOMMA+ views.
  * Enforces the visual hierarchy:
  * - CATEGORIA (uppercase subtle tracking)
  * - Título principal (text-2xl font-extrabold text-white)

@@ -580,7 +580,7 @@ export const MOCK_PROFESSIONALS: Professional[] = [
           'Periodização 100% individual montada na sua aba Treino',
           'Ajuste semanal de sobrecarga progressiva e faixas de RPE',
           'Análise de vídeos da execução dos seus levantamentos chave',
-          'Chat direto com o Rodrigo de seg a sex no SOMMA Hub'
+          'Chat direto com o Rodrigo de seg a sex na SOMMA+'
         ]
       },
       {

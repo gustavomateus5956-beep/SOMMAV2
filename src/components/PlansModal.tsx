@@ -145,7 +145,7 @@ export const PlansModal: React.FC<PlansModalProps> = ({ onClose }) => {
               </div>
               <div className="flex items-center gap-2">
                 <Check className="w-3.5 h-3.5 text-[#4edea3]" />
-                <span>Chat ilimitado no SOMMA Hub com feedback técnico</span>
+                <span>Chat ilimitado na SOMMA+ com feedback técnico</span>
               </div>
             </div>
           </div>

@@ -100,7 +100,7 @@ function MainApp() {
           prescriptionSummary:
             p.category === 'fisio'
               ? 'Protocolo de Mobilidade e Recovery Articular Ativo'
-              : p.prescriptionSummary || 'Acompanhamento integrado no SOMMA Hub'
+              : p.prescriptionSummary || 'Acompanhamento integrado na SOMMA+'
         };
       }
       if (p.category === prof.category) {
@@ -130,7 +130,7 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-[#101419] flex flex-col items-center justify-center gap-3 text-white">
         <div className="w-10 h-10 border-2 border-[#0066ff] border-t-transparent rounded-full animate-spin" />
-        <span className="text-xs text-[#8c90a1] font-semibold tracking-wide">Carregando SOMMA Hub...</span>
+        <span className="text-xs text-[#8c90a1] font-semibold tracking-wide">Carregando SOMMA+...</span>
       </div>
     );
   }

@@ -127,7 +127,7 @@ export const CommunityFeedControls: React.FC<CommunityFeedControlsProps> = ({
 
             <button
               type="button"
-              onClick={() => alert('Link de convite do SOMMA Hub copiado!')}
+              onClick={() => alert('Link de convite da SOMMA+ copiado!')}
               className="text-xs font-bold text-[#b3c5ff] hover:text-white px-3 py-1.5 rounded-lg bg-[#262a30] border border-[#31353b] transition-colors cursor-pointer"
             >
               Convidar
