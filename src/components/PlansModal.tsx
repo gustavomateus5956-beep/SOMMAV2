@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { X, Check, Sparkles, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { USER_SUBSCRIPTION_PLAN } from '../data/mockData';
 import { useUser } from '../context/UserContext';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface PlansModalProps {
   onClose: () => void;
 }
 
 export const PlansModal: React.FC<PlansModalProps> = ({ onClose }) => {
+  useScrollLock(true);
   const { user, updateUser } = useUser();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('annual');
   const [selectedPlan, setSelectedPlan] = useState<'combo' | 'treino' | 'dieta'>('combo');
@@ -32,8 +34,8 @@ export const PlansModal: React.FC<PlansModalProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-4">
-      <div className="w-full max-w-[480px] max-h-[92vh] bg-[#101419] border border-[#262a30] rounded-t-3xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-250">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-4 overscroll-contain">
+      <div className="w-full max-w-[480px] max-h-[92vh] bg-[#101419] border border-[#262a30] rounded-t-3xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-250 overscroll-contain">
         
         {/* Header */}
         <div className="px-5 py-4 bg-[#181c21] border-b border-[#262a30] flex items-center justify-between">

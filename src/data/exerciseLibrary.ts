@@ -62,6 +62,30 @@ export const EXERCISE_LIBRARY: LibraryExercise[] = [
     defaultReps: 12,
     defaultWeight: 0
   },
+  {
+    id: 'lib-peito-6',
+    name: 'Flexão de Braços no Solo',
+    muscleGroup: 'Peitoral',
+    targetMuscles: ['Peitoral Maior', 'Deltoide Anterior', 'Tríceps Braquial', 'Core'],
+    equipment: 'Peso Corporal',
+    difficulty: 'Iniciante',
+    tips: 'Corpo em prancha reta contínua. Desça com cotovelos a 45° em relação ao tronco.',
+    defaultSets: 3,
+    defaultReps: 15,
+    defaultWeight: 0
+  },
+  {
+    id: 'lib-peito-7',
+    name: 'Supino Reto com Halteres',
+    muscleGroup: 'Peitoral',
+    targetMuscles: ['Peitoral Maior', 'Deltoide Anterior', 'Tríceps Braquial'],
+    equipment: 'Halteres',
+    difficulty: 'Intermediário',
+    tips: 'Maior amplitude de movimento e trabalho estabilizador unilateral individualizado.',
+    defaultSets: 4,
+    defaultReps: 10,
+    defaultWeight: 36
+  },
 
   // DORSAIS & COSTAS
   {

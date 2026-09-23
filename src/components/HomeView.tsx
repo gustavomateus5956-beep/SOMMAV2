@@ -27,7 +27,6 @@ import {
 } from 'lucide-react';
 import { TabType, Routine, WorkoutSessionRecord, RoutineFlash, FeedPost, Comment } from '../types';
 import { INITIAL_ROUTINES, MOCK_DAILY_ROUTINES, MOCK_POSTS } from '../data/mockData';
-import { SommaTrainBadge } from './SommaTrainBadge';
 import { useUser } from '../context/UserContext';
 import { useWorkout } from '../context/WorkoutContext';
 import { storageService } from '../services/storageService';
@@ -163,53 +162,18 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onStartRoutine }
         </div>
       )}
 
-      {/* 1. Page Header: Consistent Hierarchy (Category, Title, Subtitle, Streak Badge) */}
+      {/* 1. Page Header: Consistent Hierarchy (Category, Title) */}
       <PageHeader
         category={capitalizedDate}
         title={`${greeting}, ${userFirstName}`}
-        subtitle="Aqui está o panorama do seu dia e o que precisa da sua atenção."
-        badge={
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1c2025] border border-[#262a30]">
-            <Flame className="w-4 h-4 text-[#ffb59d] fill-[#ffb59d]" />
-            <span className="text-xs font-bold text-white">{streakDays} dias</span>
-          </div>
-        }
       />
 
-      {/* 2. Plano Atual Status Card */}
-      <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1c2025] border border-[#262a30] shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#0066ff]/15 border border-[#0066ff]/30 flex items-center justify-center text-[#0066ff] shrink-0">
-            <ShieldCheck className="w-4 h-4" />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-white">{user?.plan || 'SOMMA Black Anual'}</span>
-              <span className="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-[#4edea3]/20 text-[#4edea3]">
-                Ativo
-              </span>
-            </div>
-            <span className="text-[11px] text-[#8c90a1]">
-              Equipe multidisciplinar e periodização ativa
-            </span>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => onNavigate('perfil')}
-          className="text-xs text-[#0066ff] hover:text-[#b3c5ff] font-bold px-2.5 py-1.5 rounded-lg hover:bg-[#0066ff]/10 transition-colors cursor-pointer shrink-0"
-        >
-          Meu plano
-        </button>
-      </div>
-
-      {/* 3. Ações Rápidas (4 Atalhos Sugeridos) */}
+      {/* 2. Ações Rápidas (Primeiro Bloco Funcional da Home) */}
       <section className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between px-0.5">
           <span className="text-[11px] font-bold text-[#8c90a1] uppercase tracking-wider">
             Ações Rápidas
           </span>
-          <span className="text-[10px] text-[#8c90a1]">Atalhos do dia</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -364,7 +328,7 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onStartRoutine }
           <>
             <div className="flex items-start justify-between">
               <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-[#0066ff]/20 text-[#b3c5ff] text-[11px] font-bold uppercase tracking-wider">
                     Treino de Hoje
                   </span>
@@ -372,9 +336,6 @@ export const HomeView: React.FC<HomeViewProps> = ({ onNavigate, onStartRoutine }
                   <span className="text-xs text-[#c2c6d8] font-semibold">
                     {plannedRoutine.category || 'Foco Hipertrofia'}
                   </span>
-                  {plannedRoutine.isProfessionalCertified && plannedRoutine.certifiedBy && (
-                    <SommaTrainBadge certificate={plannedRoutine.certifiedBy} size="sm" />
-                  )}
                 </div>
                 <h2 className="text-lg md:text-xl font-extrabold text-white mt-1">
                   {plannedRoutine.name}

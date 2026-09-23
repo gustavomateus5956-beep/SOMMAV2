@@ -1,51 +1,35 @@
 import React, { useState, useRef } from 'react';
-import { 
-  Users, 
-  Flame
-} from 'lucide-react';
-import { 
-  MOCK_POSTS, 
-  MOCK_LOCAL_ATHLETES, 
-  MOCK_ACTIVE_PARTNER_AVATARS, 
-  MOCK_DAILY_ROUTINES, 
-  DISCOVERABLE_ATHLETES 
-} from '../data/mockData';
-import { FeedPost, RoutineFlash, DiscoverAthlete } from '../types';
-import { RoutineViewerModal } from './RoutineViewerModal';
-import { DiscoverAthletesSection } from './DiscoverAthletesSection';
+import { Camera } from 'lucide-react';
+import { MOCK_POSTS, MOCK_LOCAL_ATHLETES, USER_PROFILE } from '../data/mockData';
+import { FeedPost } from '../types';
 import { PageHeader } from './PageHeader';
-
-import { CommunityRoutinesStrip } from './community/CommunityRoutinesStrip';
-import { CommunityFeedControls } from './community/CommunityFeedControls';
 import { CommunityFeedPostCard } from './community/CommunityFeedPostCard';
 import { CommunitySuggestedAthletes } from './community/CommunitySuggestedAthletes';
 import { CommunityCreateModal } from './community/CommunityCreateModal';
+import { useUser } from '../context/UserContext';
 
 interface CommunityViewProps {
   onBack?: () => void;
 }
 
-export const CommunityView: React.FC<CommunityViewProps> = ({ onBack }) => {
-  const [activeTab, setActiveTab] = useState<'seguindo' | 'explorar'>('seguindo');
+export const CommunityView: React.FC<CommunityViewProps> = () => {
+  const { user } = useUser();
+  const avatarUrl = user?.avatar || USER_PROFILE.avatar;
+  const userName = user?.name || USER_PROFILE.name;
+
   const [posts, setPosts] = useState<FeedPost[]>(MOCK_POSTS);
-  const [routines, setRoutines] = useState<RoutineFlash[]>(MOCK_DAILY_ROUTINES);
   const [athletes, setAthletes] = useState(MOCK_LOCAL_ATHLETES);
-  const [discoverAthletes, setDiscoverAthletes] = useState<DiscoverAthlete[]>(DISCOVERABLE_ATHLETES);
-  const [searchQuery, setSearchQuery] = useState('');
   const [activeCommentsPostId, setActiveCommentsPostId] = useState<string | null>(null);
   const [commentInput, setCommentInput] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Modals state
+  // Modal State
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [postType, setPostType] = useState<'feed' | 'routine'>('routine');
-  const [viewingRoutineIndex, setViewingRoutineIndex] = useState<number | null>(null);
 
-  // New Post/Routine Form State
+  // Form State
   const [newCaption, setNewCaption] = useState('');
-  const [newPostTitle] = useState('Treino A - Peito & Tríceps');
   const [newMuscleGroup, setNewMuscleGroup] = useState('Peitoral e Ombros');
-  const [newHighlightBadge, setNewHighlightBadge] = useState('Novo PR no Supino');
+  const [newHighlightBadge, setNewHighlightBadge] = useState('');
   const [newPostImage, setNewPostImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -77,20 +61,6 @@ export const CommunityView: React.FC<CommunityViewProps> = ({ onBack }) => {
     );
   };
 
-  const handleToggleFollowDiscoverAthlete = (id: string) => {
-    setDiscoverAthletes((prev) =>
-      prev.map((a) =>
-        a.id === id
-          ? {
-              ...a,
-              following: !a.following,
-              followersCount: a.following ? a.followersCount - 1 : a.followersCount + 1
-            }
-          : a
-      )
-    );
-  };
-
   const handleSendComment = (postId: string) => {
     if (!commentInput.trim()) return;
     setPosts((prev) =>
@@ -100,7 +70,7 @@ export const CommunityView: React.FC<CommunityViewProps> = ({ onBack }) => {
             ...(p.comments || []),
             {
               id: `c-${Date.now()}`,
-              author: 'Lucas Andrade',
+              author: userName,
               role: 'Você',
               text: commentInput.trim()
             }
@@ -129,151 +99,106 @@ export const CommunityView: React.FC<CommunityViewProps> = ({ onBack }) => {
   };
 
   const handlePublish = () => {
-    if (postType === 'routine') {
-      // Create new 24h Routine
-      const newRoutine: RoutineFlash = {
-        id: `routine-${Date.now()}`,
-        authorName: 'Sua Rotina',
-        authorAvatar: 'https://lh3.googleusercontent.com/aida/AEtjO1URm0XDVMSrJNRDc_1GLuvyv0l5c4j4WEL9rP3UPflZRz5H1m9TZPGBMK00H335edXtA8GKJ3D11CB0zoo-_xT8BX4Of8ILIXCOvazguboO4Lw5pTVsG7iJggnbin_E1GWeZ841ZBSPfxaiVabJ12AEsVjplJzt2l3sdqKXs6S9GfMO-qHvR_UCqAjtllBiVgbQolwJ6Cwt3wA0KGJybX7eKNw07aG_W4HSTR08k3vGpETwMxoMon6YKB-UxRSpFwJWPCD7sWLk24k',
-        isUser: true,
-        hasUnseen: false,
-        imageUrl: newPostImage || 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop',
-        caption: newCaption.trim() || 'Rotina de treino cumprida com consistência!',
-        timeAgo: 'Agora mesmo',
-        expiresInHours: 24, // 24-hour expiration cycle
-        targetMuscle: newMuscleGroup,
-        todayVolume: '7.850 kg movidos',
-        statBadge: newHighlightBadge || 'Treino Pago',
-        workoutHighlight: 'Rotina do Dia'
-      };
-      setRoutines([newRoutine, ...routines.filter(r => !r.isUser)]);
-    } else {
-      // Create new Feed Post
-      const newPost: FeedPost = {
-        id: `user-post-${Date.now()}`,
-        authorName: 'Lucas Andrade',
-        authorBadge: 'Você',
-        authorVerified: true,
-        authorAvatar: 'https://lh3.googleusercontent.com/aida/AEtjO1URm0XDVMSrJNRDc_1GLuvyv0l5c4j4WEL9rP3UPflZRz5H1m9TZPGBMK00H335edXtA8GKJ3D11CB0zoo-_xT8BX4Of8ILIXCOvazguboO4Lw5pTVsG7iJggnbin_E1GWeZ841ZBSPfxaiVabJ12AEsVjplJzt2l3sdqKXs6S9GfMO-qHvR_UCqAjtllBiVgbQolwJ6Cwt3wA0KGJybX7eKNw07aG_W4HSTR08k3vGpETwMxoMon6YKB-UxRSpFwJWPCD7sWLk24k',
-        timeAgo: 'Agora mesmo',
-        location: 'SOMMA Training Lab',
-        tag1: 'ROTINA CONCLUÍDA',
-        tag2: newMuscleGroup.toUpperCase(),
-        title: newPostTitle || 'Treino do Dia Finalizado',
-        caption: newCaption.trim(),
-        imageUrl: newPostImage || undefined,
-        duration: '52 min',
-        volume: '7.850 kg',
-        exercisesCount: 5,
-        prsCount: 1,
-        exercisesPreview: [
-          { name: 'Supino Reto Barra', detail: '4 × 8 @ 96 kg', isPr: true },
-          { name: 'Supino Inclinado Halteres', detail: '3 × 10 @ 34 kg' }
-        ],
-        cheerCount: 1,
-        userCheered: true,
-        commentsCount: 0
-      };
-      setPosts([newPost, ...posts]);
-    }
+    const newPost: FeedPost = {
+      id: `user-post-${Date.now()}`,
+      authorName: userName,
+      authorBadge: 'Você',
+      authorVerified: true,
+      authorAvatar: avatarUrl,
+      timeAgo: 'Agora mesmo',
+      location: 'SOMMA Training Lab',
+      tag1: 'EVOLUÇÃO',
+      tag2: (newMuscleGroup || 'GERAL').toUpperCase(),
+      title: newHighlightBadge || 'Treino Concluído com Consistência',
+      caption: newCaption.trim() || 'Mais um dia vencido com foco e disciplina!',
+      imageUrl: newPostImage || undefined,
+      duration: '52 min',
+      volume: '7.850 kg',
+      exercisesCount: 5,
+      prsCount: newHighlightBadge ? 1 : 0,
+      exercisesPreview: [
+        { name: 'Supino Reto Barra', detail: '4 × 8 @ 96 kg', isPr: !!newHighlightBadge },
+        { name: 'Supino Inclinado Halteres', detail: '3 × 10 @ 34 kg' }
+      ],
+      cheerCount: 1,
+      userCheered: true,
+      commentsCount: 0
+    };
 
-    // Reset Form
+    setPosts([newPost, ...posts]);
     setNewCaption('');
     setNewPostImage(null);
+    setNewHighlightBadge('');
     setShowCreateModal(false);
   };
 
   return (
     <div className="flex flex-col w-full pb-24 md:pb-12 gap-5">
-      {/* Standardized Page Header */}
+      {/* 1. Header: Clean title without redundant category, duplicate back or badges */}
       <PageHeader
-        category="SOCIAL & PERFORMANCE"
         title="Comunidade"
-        subtitle="Feed de treinos, rotinas em 24h e interação entre atletas"
-        onBack={onBack}
-        badge={
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#1c2025] border border-[#262a30]">
-            <Users className="w-4 h-4 text-[#0066ff]" />
-            <span className="text-xs font-bold text-white">Atletas</span>
-          </div>
-        }
+        subtitle="Compartilhe sua evolução e acompanhe outros atletas."
       />
 
-      {/* 1. REMODELED "ROTINAS (24H)" STRIP */}
-      <CommunityRoutinesStrip
-        routines={routines}
-        onAddRoutine={() => {
-          setPostType('routine');
-          setShowCreateModal(true);
-        }}
-        onViewRoutine={(index) => setViewingRoutineIndex(index)}
-      />
-
-      {/* 2. Sub-tabs: Seguindo vs Explorar + Seguindo Shortcuts */}
-      <CommunityFeedControls
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onOpenCreatePhoto={() => {
-          setPostType('feed');
-          setShowCreateModal(true);
-        }}
-        activePartnerAvatars={MOCK_ACTIVE_PARTNER_AVATARS}
-      />
-
-      {/* 3. EXPLORAR VIEW (When Explorar Tab is selected) */}
-      {activeTab === 'explorar' && (
-        <div className="flex flex-col gap-5 animate-in fade-in-50 duration-200">
-          {/* Main Explore Bar & User Discovery Grid */}
-          <DiscoverAthletesSection
-            athletes={discoverAthletes}
-            onToggleFollow={handleToggleFollowDiscoverAthlete}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
+      {/* 2. Ação Principal: Compartilhar Evolução */}
+      <div className="bg-[#1c2025] p-3.5 sm:p-4 rounded-2xl border border-[#262a30] flex items-center justify-between gap-3 shadow-sm hover:border-[#31353b] transition-all">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <img
+            src={avatarUrl}
+            alt={userName}
+            className="w-10 h-10 rounded-full object-cover border border-[#262a30] shrink-0 bg-[#262a30]"
           />
-
-          {/* Heading for Explore Feed */}
-          <div className="flex items-center justify-between pt-2 border-t border-[#262a30]/80">
-            <div className="flex items-center gap-2">
-              <Flame className="w-4 h-4 text-[#cc4204]" />
-              <h4 className="text-sm font-bold text-white">Publicações em Alta na Comunidade</h4>
-            </div>
-            <span className="text-xs text-[#8c90a1]">Tendências da SOMMA+</span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="text-left text-xs sm:text-sm text-[#8c90a1] hover:text-[#c2c6d8] transition-colors truncate flex-1 cursor-pointer py-1"
+          >
+            Compartilhar evolução, treino ou foto...
+          </button>
         </div>
-      )}
+        <button
+          type="button"
+          onClick={() => setShowCreateModal(true)}
+          className="h-10 px-4 bg-[#0066ff] hover:bg-[#0054d6] text-white rounded-xl text-xs font-bold flex items-center gap-2 shrink-0 transition-all cursor-pointer shadow-sm active:scale-95"
+        >
+          <Camera className="w-4 h-4" />
+          <span>Publicar</span>
+        </button>
+      </div>
 
-      {/* 4. FEED STREAM */}
+      {/* 3. Feed da Comunidade (Centro da Tela) */}
       <div className="flex flex-col gap-4">
-        {posts.map((post) => (
-          <CommunityFeedPostCard
-            key={post.id}
-            post={post}
-            onToggleCheer={handleToggleCheer}
-            onCopyRoutine={handleCopyRoutine}
-            isCopied={copiedId === post.id}
-            isCommentsOpen={activeCommentsPostId === post.id}
-            onToggleComments={() =>
-              setActiveCommentsPostId(activeCommentsPostId === post.id ? null : post.id)
-            }
-            commentInput={commentInput}
-            onCommentInputChange={setCommentInput}
-            onSendComment={() => handleSendComment(post.id)}
-          />
+        {posts.map((post, idx) => (
+          <React.Fragment key={post.id}>
+            <CommunityFeedPostCard
+              post={post}
+              onToggleCheer={handleToggleCheer}
+              onCopyRoutine={handleCopyRoutine}
+              isCopied={copiedId === post.id}
+              isCommentsOpen={activeCommentsPostId === post.id}
+              onToggleComments={() =>
+                setActiveCommentsPostId(activeCommentsPostId === post.id ? null : post.id)
+              }
+              commentInput={commentInput}
+              onCommentInputChange={setCommentInput}
+              onSendComment={() => handleSendComment(post.id)}
+            />
+
+            {/* Sugestões de atletas integradas naturalmente no fluxo do feed */}
+            {idx === 1 && athletes.length > 0 && (
+              <CommunitySuggestedAthletes
+                athletes={athletes}
+                onToggleFollow={handleToggleFollowAthlete}
+              />
+            )}
+          </React.Fragment>
         ))}
       </div>
 
-      {/* 5. Suggested Athletes Section */}
-      <CommunitySuggestedAthletes
-        athletes={athletes}
-        onToggleFollow={handleToggleFollowAthlete}
-      />
-
-      {/* --- CREATE POST OR 24H ROUTINE MODAL --- */}
+      {/* 4. Modal de Publicação */}
       <CommunityCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        postType={postType}
-        onPostTypeChange={setPostType}
         newMuscleGroup={newMuscleGroup}
         onMuscleGroupChange={setNewMuscleGroup}
         newHighlightBadge={newHighlightBadge}
@@ -287,16 +212,6 @@ export const CommunityView: React.FC<CommunityViewProps> = ({ onBack }) => {
         onSetPresetImage={setNewPostImage}
         onPublish={handlePublish}
       />
-
-      {/* --- 24H ROUTINE VIEWER MODAL --- */}
-      {viewingRoutineIndex !== null && (
-        <RoutineViewerModal
-          routines={routines}
-          initialIndex={viewingRoutineIndex}
-          onClose={() => setViewingRoutineIndex(null)}
-        />
-      )}
-
     </div>
   );
 };

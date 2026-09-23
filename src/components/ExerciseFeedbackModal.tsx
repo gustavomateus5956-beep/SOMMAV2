@@ -14,6 +14,7 @@ import {
   Flame
 } from 'lucide-react';
 import { Exercise } from '../types';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ExerciseFeedbackModalProps {
   exercise: Exercise;
@@ -47,6 +48,7 @@ export const ExerciseFeedbackModal: React.FC<ExerciseFeedbackModalProps> = ({
   onPostToFeed,
   onSendMessageToCoach
 }) => {
+  useScrollLock(true);
   const [activeTab, setActiveTab] = useState<'professor' | 'feed'>('professor');
 
   // Teacher feedback state
@@ -116,8 +118,8 @@ export const ExerciseFeedbackModal: React.FC<ExerciseFeedbackModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg bg-[#181c21] border border-[#262a30] rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[92vh] overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in duration-200 overscroll-contain">
+      <div className="w-full max-w-lg bg-[#181c21] border border-[#262a30] rounded-t-2xl sm:rounded-2xl flex flex-col max-h-[92vh] overflow-hidden shadow-2xl overscroll-contain">
         {/* Header */}
         <div className="px-4 py-3.5 bg-[#12161b] border-b border-[#262a30] flex items-center justify-between">
           <div className="flex flex-col min-w-0 pr-2">

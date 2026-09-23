@@ -161,10 +161,10 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
           title="Treino"
           subtitle="Rotinas ativas, prescrições e histórico de sessões"
           badge={
-            <div className="flex items-center gap-1.5 bg-[#1c2025] px-3 py-1.5 rounded-full border border-[#262a30]">
-              <Flame className="w-4 h-4 text-[#4edea3] fill-[#4edea3]" />
-              <span className="text-xs font-bold text-white">
-                {user?.streakDays || 14} Dias
+            <div className="flex items-center gap-1.5 bg-[#181c21] px-3.5 py-1.5 rounded-full border border-[#262a30] shadow-sm">
+              <Flame className="w-4 h-4 text-[#ff8400] fill-[#ff8400]" />
+              <span className="text-xs font-bold text-white tracking-wide">
+                Ofensiva {user?.streakDays || 14}
               </span>
             </div>
           }
@@ -173,10 +173,6 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
         {/* Quick Action Buttons & Evolução Navigation Banner */}
         <WorkoutQuickActions
           onStartEmptyWorkout={() => onStartRoutine(null)}
-          onOpenExerciseLibrary={() => {
-            setTargetRoutineForExercise(null);
-            setShowExerciseLibrary(true);
-          }}
           onNavigate={onNavigate}
         />
       </section>
@@ -236,7 +232,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
           title={
             targetRoutineForExercise
               ? `Adicionar à rotina: ${targetRoutineForExercise.name}`
-              : 'Biblioteca de Exercícios SOMMA'
+              : 'Biblioteca de Exercícios'
           }
           onClose={() => {
             setShowExerciseLibrary(false);

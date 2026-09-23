@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { Routine, WorkoutSessionRecord } from '../../types';
 import { WorkoutSessionStatus } from '../../context/WorkoutContext';
-import { SommaTrainBadge } from '../SommaTrainBadge';
 
 interface WorkoutTodaySectionProps {
   workoutStatus: WorkoutSessionStatus;
@@ -151,13 +150,10 @@ export const WorkoutTodaySection: React.FC<WorkoutTodaySectionProps> = ({
         <div className="bg-[#1c2025] p-4 md:p-5 rounded-2xl border border-[#262a30] hover:border-[#0066ff]/40 flex flex-col gap-3.5 shadow-sm transition-all">
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full bg-[#0066ff]/20 text-[#b3c5ff] text-[10px] font-extrabold uppercase tracking-wider">
                   {todayPlannedRoutine.category || 'Treino A'}
                 </span>
-                {todayPlannedRoutine.isProfessionalCertified && todayPlannedRoutine.certifiedBy && (
-                  <SommaTrainBadge certificate={todayPlannedRoutine.certifiedBy} size="sm" />
-                )}
               </div>
               <h3 className="text-lg font-bold text-white mt-1.5">{todayPlannedRoutine.name}</h3>
               <span className="text-xs text-[#8c90a1]">

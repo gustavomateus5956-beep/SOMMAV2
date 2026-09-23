@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Scale } from 'lucide-react';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 interface LogWeightModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ export const LogWeightModal: React.FC<LogWeightModalProps> = ({
   const [inputWeight, setInputWeight] = useState(defaultWeight);
   const [inputBf, setInputBf] = useState(defaultBf);
 
+  useScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -32,8 +35,8 @@ export const LogWeightModal: React.FC<LogWeightModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-sm bg-[#181c21] border border-[#262a30] rounded-2xl p-5 flex flex-col gap-4 shadow-2xl animate-in zoom-in-95">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 overscroll-contain">
+      <div className="w-full max-w-sm bg-[#181c21] border border-[#262a30] rounded-2xl p-5 flex flex-col gap-4 shadow-2xl animate-in zoom-in-95 overscroll-contain">
         <div className="flex items-center gap-2 text-[#0066ff]">
           <Scale className="w-5 h-5" />
           <h3 className="text-base font-bold text-white">Registrar Pesagem Corporal</h3>

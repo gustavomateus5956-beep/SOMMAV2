@@ -1,7 +1,6 @@
 import React from 'react';
 import { Plus, Dumbbell, Clock, Play, Eye } from 'lucide-react';
 import { Routine } from '../../types';
-import { SommaTrainBadge } from '../SommaTrainBadge';
 
 interface WorkoutRoutinesSectionProps {
   routines: Routine[];
@@ -47,12 +46,7 @@ export const WorkoutRoutinesSection: React.FC<WorkoutRoutinesSectionProps> = ({
           >
             <div className="flex items-start justify-between">
               <div className="flex flex-col pr-2 gap-0.5">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-sm font-bold text-white leading-snug">{routine.name}</h3>
-                  {routine.isProfessionalCertified && routine.certifiedBy && (
-                    <SommaTrainBadge certificate={routine.certifiedBy} size="sm" />
-                  )}
-                </div>
+                <h3 className="text-sm font-bold text-white leading-snug">{routine.name}</h3>
                 <span className="text-xs text-[#8c90a1]">
                   {routine.muscleGroups || routine.category} • Última sessão: {routine.lastSession}
                 </span>

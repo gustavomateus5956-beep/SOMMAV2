@@ -1,9 +1,9 @@
 import React from 'react';
 import { X, Play, Clock, Dumbbell, Flame, ShieldCheck } from 'lucide-react';
 import { Routine } from '../types';
-import { SommaTrainBadge } from './SommaTrainBadge';
 import { ExerciseGuidanceSection } from './ExerciseGuidanceSection';
 import { getSetTypeConfig, SetTypeIcon } from '../data/setTypes';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface RoutineDetailModalProps {
   routine: Routine | null;
@@ -16,22 +16,19 @@ export const RoutineDetailModal: React.FC<RoutineDetailModalProps> = ({
   onClose,
   onStartRoutine
 }) => {
+  useScrollLock(!!routine);
+
   if (!routine) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-end md:items-center p-0 md:p-4">
-      <div className="w-full max-w-[460px] max-h-[85vh] bg-[#101419] border border-[#262a30] rounded-t-2xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-end md:items-center p-0 md:p-4 overscroll-contain">
+      <div className="w-full max-w-[460px] max-h-[85vh] bg-[#101419] border border-[#262a30] rounded-t-2xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200 overscroll-contain">
         {/* Header */}
         <div className="px-5 py-4 bg-[#181c21] border-b border-[#262a30] flex items-center justify-between">
           <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#0066ff]">
-                Estrutura de Treino
-              </span>
-              {routine.isProfessionalCertified && routine.certifiedBy && (
-                <SommaTrainBadge certificate={routine.certifiedBy} size="sm" />
-              )}
-            </div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#0066ff]">
+              Estrutura de Treino
+            </span>
             <h2 className="text-lg font-bold text-white mt-0.5">{routine.name}</h2>
           </div>
           <button
@@ -96,7 +93,7 @@ export const RoutineDetailModal: React.FC<RoutineDetailModalProps> = ({
                   </div>
                 </div>
                 <span className="text-xs font-semibold text-[#4edea3] bg-[#00a572]/20 px-2 py-0.5 rounded-full">
-                  {exercise.sets.length} séries
+                  {exercise.sets && exercise.sets.length > 0 ? `${exercise.sets.length} séries` : 'Séries a definir'}
                 </span>
               </div>
 
@@ -104,35 +101,41 @@ export const RoutineDetailModal: React.FC<RoutineDetailModalProps> = ({
               <ExerciseGuidanceSection exercise={exercise} />
 
               {/* Set targets */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1 text-[11px] text-[#c2c6d8]">
-                {exercise.sets.map((set) => {
-                  const setTypeConfig = getSetTypeConfig(set.type);
-                  const isSpecial = set.type && set.type !== 'working';
+              {exercise.sets && exercise.sets.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 pt-1 text-[11px] text-[#c2c6d8]">
+                  {exercise.sets.map((set) => {
+                    const setTypeConfig = getSetTypeConfig(set.type);
+                    const isSpecial = set.type && set.type !== 'working';
 
-                  return (
-                    <div
-                      key={set.id}
-                      className="bg-[#181c21] p-2 rounded-lg text-center border border-[#262a30]/50 flex flex-col justify-between gap-1"
-                    >
-                      <div className="flex items-center justify-center gap-1">
-                        <span
-                          className={`px-1 py-0.5 rounded text-[9px] font-bold flex items-center gap-1 border ${
-                            isSpecial
-                              ? `${setTypeConfig.badgeBg} ${setTypeConfig.badgeBorder} ${setTypeConfig.badgeText}`
-                              : 'text-[#8c90a1] border-[#262a30]'
-                          }`}
-                        >
-                          <SetTypeIcon type={set.type} className="w-2.5 h-2.5" />
-                          <span>SÉRIE {set.setNumber}</span>
+                    return (
+                      <div
+                        key={set.id}
+                        className="bg-[#181c21] p-2 rounded-lg text-center border border-[#262a30]/50 flex flex-col justify-between gap-1"
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          <span
+                            className={`px-1 py-0.5 rounded text-[9px] font-bold flex items-center gap-1 border ${
+                              isSpecial
+                                ? `${setTypeConfig.badgeBg} ${setTypeConfig.badgeBorder} ${setTypeConfig.badgeText}`
+                                : 'text-[#8c90a1] border-[#262a30]'
+                            }`}
+                          >
+                            <SetTypeIcon type={set.type} className="w-2.5 h-2.5" />
+                            <span>SÉRIE {set.setNumber}</span>
+                          </span>
+                        </div>
+                        <span className="font-bold text-white text-xs tabular-nums">
+                          {set.targetWeight || set.weight}kg × {set.targetReps || set.reps}
                         </span>
                       </div>
-                      <span className="font-bold text-white text-xs tabular-nums">
-                        {set.targetWeight || set.weight}kg × {set.targetReps || set.reps}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-[11px] text-[#8c90a1] italic pt-1 px-1">
+                  Séries e cargas a definir na execução ou pelo treinador
+                </div>
+              )}
             </div>
           ))}
         </div>

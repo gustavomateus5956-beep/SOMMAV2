@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { TabType, Routine, Professional } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
@@ -33,16 +33,54 @@ function MainApp() {
   } = useWorkout();
   const [currentTab, setCurrentTab] = useState<TabType>('inicio');
   const [previousTab, setPreviousTab] = useState<TabType>('inicio');
+  const mainContentRef = useRef<HTMLElement | null>(null);
+
+  // Centralized scroll-to-top function for page/tab transitions
+  const resetScrollToTop = () => {
+    const performScroll = () => {
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+      }
+      if (typeof document !== 'undefined') {
+        if (document.documentElement) {
+          document.documentElement.scrollTop = 0;
+        }
+        if (document.body) {
+          document.body.scrollTop = 0;
+        }
+      }
+      if (mainContentRef.current) {
+        mainContentRef.current.scrollTop = 0;
+      }
+    };
+
+    performScroll();
+    // Guarantee top position after React layout/paint cycle
+    requestAnimationFrame(performScroll);
+  };
+
+  // Automatically reset scroll whenever the main tab changes
+  useLayoutEffect(() => {
+    resetScrollToTop();
+  }, [currentTab]);
 
   const handleNavigate = (tab: TabType) => {
     if (tab !== currentTab) {
       setPreviousTab(currentTab);
       setCurrentTab(tab);
+    } else {
+      // Tapping the currently active tab returns to top
+      resetScrollToTop();
     }
   };
 
   const handleBack = () => {
-    setCurrentTab(previousTab || 'inicio');
+    const targetTab = previousTab || 'inicio';
+    if (targetTab !== currentTab) {
+      setCurrentTab(targetTab);
+    } else {
+      resetScrollToTop();
+    }
   };
 
   // Modals state
@@ -157,6 +195,7 @@ function MainApp() {
 
         {/* View Body */}
         <main
+          ref={mainContentRef}
           className={`flex-1 max-w-[480px] md:max-w-3xl w-full mx-auto px-4 pt-16 md:pt-20 ${
             workoutStatus === 'minimized' ? 'pb-36 md:pb-24' : 'pb-24 md:pb-8'
           }`}

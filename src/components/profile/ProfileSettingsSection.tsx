@@ -1,5 +1,5 @@
-import React from 'react';
-import { Volume2, Smartphone, Cloud, Download, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { Volume2, Smartphone, Cloud, Download, LogOut, FileText, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ProfileSettingsSectionProps {
   unit: 'kg' | 'lbs';
@@ -22,6 +22,8 @@ export const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({
   onExportCsv,
   onLogout
 }) => {
+  const [showLicenses, setShowLicenses] = useState(false);
+
   return (
     <>
       {/* Configurações do Aplicativo */}
@@ -94,6 +96,47 @@ export const ProfileSettingsSection: React.FC<ProfileSettingsSectionProps> = ({
           </div>
           <span className="text-xs font-bold text-[#4edea3]">Sincronizado</span>
         </div>
+      </section>
+
+      {/* Sobre → Licenças e Créditos */}
+      <section className="bg-[#1c2025] rounded-3xl p-5 border border-[#262a30] flex flex-col gap-3 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <FileText className="w-4 h-4 text-[#0066ff]" />
+            <h2 className="text-xs font-extrabold text-white uppercase tracking-wider">
+              Sobre → Licenças e Créditos
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowLicenses(!showLicenses)}
+            className="text-xs text-[#8c90a1] hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
+          >
+            <span>{showLicenses ? 'Recolher' : 'Ver licenças'}</span>
+            {showLicenses ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+          </button>
+        </div>
+
+        <p className="text-xs text-[#8c90a1] leading-relaxed">
+          O SOMMA+ utiliza bibliotecas de código aberto e demonstrações visuais biomecânicas devidamente licenciadas para orientar sua execução de treino.
+        </p>
+
+        {showLicenses && (
+          <div className="mt-2 p-3.5 rounded-2xl bg-[#14181f] border border-[#262a30] flex flex-col gap-3 text-xs text-[#c2c6d8] animate-in fade-in duration-200">
+            {/* ExerciseDB Attribution */}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-white">Catálogo de Demonstração Biomecânica</span>
+                <span className="text-[10px] text-[#8c90a1] bg-[#1c2025] px-2 py-0.5 rounded font-mono">
+                  API V1
+                </span>
+              </div>
+              <p className="text-[11px] text-[#8c90a1] leading-relaxed">
+                Demonstrações de execução técnica e catálogo integrado sob termos de conformidade visual do aplicativo.
+              </p>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* Export and Logout Actions */}

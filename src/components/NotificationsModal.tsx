@@ -1,11 +1,13 @@
 import React from 'react';
 import { X, Flame, Dumbbell, Calendar, Check, Award, Bell } from 'lucide-react';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface NotificationsModalProps {
   onClose: () => void;
 }
 
 export const NotificationsModal: React.FC<NotificationsModalProps> = ({ onClose }) => {
+  useScrollLock(true);
   const notifications = [
     {
       id: '1',
@@ -46,8 +48,8 @@ export const NotificationsModal: React.FC<NotificationsModalProps> = ({ onClose 
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center p-4 pt-16">
-      <div className="w-full max-w-sm bg-[#1c2025] border border-[#262a30] rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-start justify-center p-4 pt-16 overscroll-contain">
+      <div className="w-full max-w-sm bg-[#1c2025] border border-[#262a30] rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in zoom-in-95 duration-150 overscroll-contain">
         <div className="px-4 py-3 bg-[#181c21] border-b border-[#262a30] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4 text-[#0066ff]" />

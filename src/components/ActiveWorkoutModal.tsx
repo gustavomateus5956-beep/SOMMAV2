@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Check } from 'lucide-react';
+import { Plus, Trash2, Dumbbell } from 'lucide-react';
 import { Routine, Exercise, WorkoutSessionRecord, CompletedExerciseLog, SetTypeKey } from '../types';
 import { ExportCardModal, WorkoutExportData } from './ExportCardModal';
 import { ExerciseLibraryModal } from './ExerciseLibraryModal';
 import { storageService } from '../services/storageService';
 import { useUser } from '../context/UserContext';
 import { useWorkout } from '../context/WorkoutContext';
-import { SetTypeSelectorModal } from './SetTypeSelectorModal';
+import { SetTypeSheet } from './active-workout/SetTypeSheet';
+import { RestSettingsSheet } from './active-workout/RestSettingsSheet';
 import { ExerciseFeedbackModal } from './ExerciseFeedbackModal';
+import { ExerciseDetailModal } from './exercise/ExerciseDetailModal';
 
 import { ActiveWorkoutHeader } from './active-workout/ActiveWorkoutHeader';
 import { ActiveWorkoutExerciseCard } from './active-workout/ActiveWorkoutExerciseCard';
@@ -62,11 +64,14 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
   const [showExerciseLibrary, setShowExerciseLibrary] = useState(false);
   const [editingSetType, setEditingSetType] = useState<{ exIndex: number; setIndex: number } | null>(null);
   const [feedbackExercise, setFeedbackExercise] = useState<Exercise | null>(null);
+  const [selectedExerciseForDetail, setSelectedExerciseForDetail] = useState<Exercise | null>(null);
+  const [showRestSettings, setShowRestSettings] = useState(false);
+  const [exerciseForRestConfig, setExerciseForRestConfig] = useState<Exercise | null>(null);
 
   // Rest timer states
   const [restSeconds, setRestSeconds] = useState<number | null>(activeSession?.restSeconds ?? null);
   const [isRestPaused, setIsRestPaused] = useState(activeSession?.isRestPaused || false);
-  const defaultRestTime = 60; // 60 seconds standard
+  const defaultRestTime = 120; // 2 minutes standard
 
   // Sync with global timer in WorkoutContext (keeps running when minimized!)
   useEffect(() => {
@@ -96,21 +101,10 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
       }
       setExercises(cloned);
       setWorkoutName(routine.name);
-    } else {
-      // Empty workout initial state
-      setExercises([
-        {
-          id: 'custom-ex-1',
-          name: 'Supino Reto com Barra',
-          muscleGroup: 'Peitoral',
-          sets: [
-            { id: 'cs1', setNumber: 1, prevWeight: 80, prevReps: 10, weight: 80, reps: 10, completed: false },
-            { id: 'cs2', setNumber: 2, prevWeight: 84, prevReps: 8, weight: 84, reps: 8, completed: false },
-            { id: 'cs3', setNumber: 3, prevWeight: 90, prevReps: 6, weight: 90, reps: 6, completed: false }
-          ]
-        }
-      ]);
-      setWorkoutName('Treino Livre');
+    } else if (!activeSession?.exercises?.length && exercises.length === 0) {
+      // Empty workout initial state: start empty without pre-filled exercises
+      setExercises([]);
+      setWorkoutName('Treino Vazio');
     }
   }, [routine, user?.id]);
 
@@ -157,39 +151,17 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
     updateExercisesAndSync(updated);
   };
 
-  const handleAddExerciseFromLibrary = (exerciseData: {
-    name: string;
-    muscleGroup: string;
-    equipment?: string;
-  }) => {
+  const handleAddExerciseFromLibrary = (exerciseData: Exercise) => {
     const newEx: Exercise = {
-      id: `ex-${Date.now()}`,
-      name: exerciseData.name,
-      muscleGroup: exerciseData.muscleGroup,
-      equipment: exerciseData.equipment,
-      sets: [
+      ...exerciseData,
+      id: exerciseData.id || `ex-${Date.now()}`,
+      sets: exerciseData.sets && exerciseData.sets.length > 0 ? exerciseData.sets : [
         {
           id: `s-${Date.now()}-1`,
           setNumber: 1,
           type: 'working',
-          weight: 40,
-          reps: 10,
-          completed: false
-        },
-        {
-          id: `s-${Date.now()}-2`,
-          setNumber: 2,
-          type: 'working',
-          weight: 40,
-          reps: 10,
-          completed: false
-        },
-        {
-          id: `s-${Date.now()}-3`,
-          setNumber: 3,
-          type: 'working',
-          weight: 40,
-          reps: 10,
+          weight: 0,
+          reps: 0,
           completed: false
         }
       ]
@@ -216,8 +188,9 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
 
     // If completed and rest timer wasn't running, trigger standard rest timer
     if (!currentStatus) {
-      setRestSeconds(defaultRestTime);
-      setContextRestSeconds(defaultRestTime);
+      const targetRest = (targetEx as any).restTimeSeconds || defaultRestTime;
+      setRestSeconds(targetRest);
+      setContextRestSeconds(targetRest);
       setIsRestPaused(false);
       setContextIsRestPaused(false);
     }
@@ -241,12 +214,6 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
     updateExercisesAndSync(updated);
   };
 
-  const adjustSetWeight = (exIndex: number, setIndex: number, delta: number) => {
-    const current = exercises[exIndex]?.sets[setIndex]?.weight || 0;
-    const nextVal = Math.max(0, current + delta);
-    updateSetField(exIndex, setIndex, 'weight', nextVal);
-  };
-
   const addSetToExercise = (exIndex: number) => {
     const updated = [...exercises];
     const targetEx = { ...updated[exIndex] };
@@ -264,10 +231,23 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
     updateExercisesAndSync(updated);
   };
 
-  const removeLastSet = (exIndex: number) => {
+  const handleRemoveSet = (exIndex: number, setIndex: number) => {
     const updated = [...exercises];
-    if (updated[exIndex].sets.length > 1) {
-      updated[exIndex].sets.pop();
+    if (updated[exIndex]?.sets?.length > 1) {
+      updated[exIndex].sets = updated[exIndex].sets
+        .filter((_, idx) => idx !== setIndex)
+        .map((s, idx) => ({ ...s, setNumber: idx + 1 }));
+      updateExercisesAndSync(updated);
+    }
+  };
+
+  const handleUpdateNotes = (exIndex: number, notes: string) => {
+    const updated = [...exercises];
+    if (updated[exIndex]) {
+      updated[exIndex] = {
+        ...updated[exIndex],
+        professionalNote: notes
+      };
       updateExercisesAndSync(updated);
     }
   };
@@ -416,9 +396,9 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col justify-end md:justify-center items-center">
-      <div className="w-full max-w-[500px] h-[95vh] md:h-[90vh] bg-[#101419] border border-[#262a30] rounded-t-2xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+      <div className="w-full max-w-[500px] h-[100dvh] md:h-[92vh] bg-[#101419] md:border border-[#262a30] md:rounded-3xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
         
-        {/* Top Sticky Bar: Live Timer, Progress, Rest Bar and Sub-Header */}
+        {/* Top Sticky Bar: [Voltar] TREINO [Timer] [CONCLUIR] + Sub-Stats Horizontal Row */}
         <ActiveWorkoutHeader
           isTimerPaused={isTimerPaused}
           seconds={seconds}
@@ -428,7 +408,7 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
             setContextIsTimerPaused(next);
           }}
           onMinimize={handleMinimize}
-          onRequestDiscard={() => setShowDiscardConfirm(true)}
+          onConclude={handleFinishAttempt}
           totalCompletedSets={totalCompletedSets}
           totalSetsCount={totalSetsCount}
           progressPercentage={progressPercentage}
@@ -450,65 +430,102 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
             setRestSeconds(null);
             setContextRestSeconds(null);
           }}
+          onOpenRestSettings={() => {
+            setExerciseForRestConfig(null);
+            setShowRestSettings(true);
+          }}
           workoutName={workoutName}
           onWorkoutNameChange={setWorkoutName}
-          exerciseCount={exercises.length}
           totalVolume={totalVolume}
-          detectedPrs={detectedPrs}
           formatTimer={formatTimer}
         />
 
-        {/* Scrollable Exercises & Sets Area (Hevy-style Cards) */}
-        <div className="flex-1 overflow-y-auto p-3.5 space-y-4 no-scrollbar">
-          {exercises.map((exercise, exIndex) => (
-            <ActiveWorkoutExerciseCard
-              key={exercise.id || `ex-${exIndex}`}
-              exercise={exercise}
-              exIndex={exIndex}
-              totalExercises={exercises.length}
-              onOpenFeedback={setFeedbackExercise}
-              onStartRest={() => {
-                setRestSeconds(defaultRestTime);
-                setIsRestPaused(false);
-              }}
-              onRemoveExercise={handleRemoveExercise}
-              onEditSetType={(eIdx, sIdx) => setEditingSetType({ exIndex: eIdx, setIndex: sIdx })}
-              onAdjustSetWeight={adjustSetWeight}
-              onUpdateSetField={updateSetField}
-              onToggleSetComplete={toggleSetComplete}
-              onAddSet={addSetToExercise}
-              onRemoveLastSet={removeLastSet}
-            />
-          ))}
+        {/* Scrollable Exercises Feed (Clean Hevy-style blocks on dark canvas) */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 no-scrollbar">
+          {exercises.length === 0 ? (
+            <div className="h-full min-h-[380px] flex flex-col items-center justify-center text-center px-4 py-12">
+              <div className="w-16 h-16 rounded-2xl bg-[#181c21] border border-[#262a30] flex items-center justify-center text-[#0066ff] mb-4 shadow-sm">
+                <Dumbbell className="w-8 h-8 stroke-[1.75]" />
+              </div>
+              <h3 className="text-base sm:text-lg font-bold text-white mb-1.5">
+                Nenhum exercício adicionado
+              </h3>
+              <p className="text-xs sm:text-sm text-[#8c90a1] max-w-xs mb-6 leading-relaxed">
+                Monte seu treino escolhendo exercícios da biblioteca.
+              </p>
+              <button
+                type="button"
+                onClick={() => setShowExerciseLibrary(true)}
+                className="h-12 px-6 rounded-2xl bg-[#0066ff] hover:bg-[#0054d6] active:scale-[0.98] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#0066ff]/25 transition-all cursor-pointer"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>Adicionar exercício</span>
+              </button>
 
-          {/* Add Exercise from SOMMA Library */}
-          <button
-            type="button"
-            onClick={() => setShowExerciseLibrary(true)}
-            className="w-full py-3.5 px-4 rounded-2xl bg-[#14181f] hover:bg-[#1c2025] border border-dashed border-[#262a30] hover:border-[#0066ff] text-[#0066ff] hover:text-[#b3c5ff] text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm"
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Adicionar Exercício da Biblioteca SOMMA</span>
-          </button>
-        </div>
+              <button
+                type="button"
+                onClick={() => setShowDiscardConfirm(true)}
+                className="mt-6 text-xs text-[#8c90a1] hover:text-[#ef4444] transition-colors cursor-pointer py-1.5 px-3 rounded-lg flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Descartar treino</span>
+              </button>
+            </div>
+          ) : (
+            <>
+              {exercises.map((exercise, exIndex) => (
+                <ActiveWorkoutExerciseCard
+                  key={exercise.id || `ex-${exIndex}`}
+                  exercise={exercise}
+                  exIndex={exIndex}
+                  totalExercises={exercises.length}
+                  onOpenFeedback={setFeedbackExercise}
+                  onStartRest={(secs) => {
+                    const restDuration = secs || defaultRestTime;
+                    setRestSeconds(restDuration);
+                    setContextRestSeconds(restDuration);
+                    setIsRestPaused(false);
+                    setContextIsRestPaused(false);
+                  }}
+                  onRemoveExercise={handleRemoveExercise}
+                  onEditSetType={(eIdx, sIdx) => setEditingSetType({ exIndex: eIdx, setIndex: sIdx })}
+                  onUpdateSetField={updateSetField}
+                  onToggleSetComplete={toggleSetComplete}
+                  onAddSet={addSetToExercise}
+                  onOpenDetail={setSelectedExerciseForDetail}
+                  onUpdateNotes={handleUpdateNotes}
+                  onConfigureRest={(ex) => {
+                    setExerciseForRestConfig(ex);
+                    setShowRestSettings(true);
+                  }}
+                />
+              ))}
 
-        {/* Bottom CTA Bar */}
-        <div className="p-4 bg-[#181c21] border-t border-[#262a30] flex items-center gap-3 shrink-0">
-          <button
-            type="button"
-            onClick={() => setShowDiscardConfirm(true)}
-            className="h-12 px-4 rounded-xl bg-[#262a30] hover:bg-[#31353b] text-white text-xs font-semibold transition-colors cursor-pointer"
-          >
-            Pausar / Sair
-          </button>
-          <button
-            type="button"
-            onClick={handleFinishAttempt}
-            className="flex-1 h-12 rounded-xl bg-[#0066ff] hover:bg-[#0054d6] active:scale-[0.98] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-[#0066ff]/20 transition-all cursor-pointer"
-          >
-            <Check className="w-5 h-5 stroke-[2.5]" />
-            <span>Finalizar Treino</span>
-          </button>
+              {/* Add Exercise from SOMMA Library */}
+              <div className="pt-2 pb-6 space-y-4">
+                <button
+                  type="button"
+                  onClick={() => setShowExerciseLibrary(true)}
+                  className="w-full h-12 rounded-xl bg-[#14181f] hover:bg-[#1c2025] border border-dashed border-[#262a30] hover:border-[#0066ff] text-[#0066ff] hover:text-[#38bdf8] text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.99]"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Adicionar Exercício</span>
+                </button>
+
+                {/* Subtle Discard Workout Action */}
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowDiscardConfirm(true)}
+                    className="text-xs text-[#8c90a1] hover:text-[#ef4444] transition-colors cursor-pointer py-1.5 px-3 rounded-lg flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Descartar treino</span>
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Confirmation Modal for Incomplete Sets */}
@@ -563,16 +580,46 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
         />
       )}
 
-      {/* Set Type Selector Modal */}
+      {/* Set Type Sheet (Matching Screenshot 2 & 3: W, 1, F, D, Remove, Help Dialog) */}
       {editingSetType && (
-        <SetTypeSelectorModal
+        <SetTypeSheet
+          isOpen={Boolean(editingSetType)}
           setNumber={exercises[editingSetType.exIndex]?.sets[editingSetType.setIndex]?.setNumber || 1}
           currentType={exercises[editingSetType.exIndex]?.sets[editingSetType.setIndex]?.type || 'working'}
-          exerciseName={exercises[editingSetType.exIndex]?.name || 'Exercício'}
           onClose={() => setEditingSetType(null)}
           onSelectType={handleUpdateSetType}
+          onRemoveSet={() => handleRemoveSet(editingSetType.exIndex, editingSetType.setIndex)}
         />
       )}
+
+      {/* Rest Settings Bottom Sheet */}
+      <RestSettingsSheet
+        isOpen={showRestSettings}
+        exerciseName={exerciseForRestConfig?.name}
+        currentRestSeconds={
+          (exerciseForRestConfig as any)?.restTimeSeconds || restSeconds || defaultRestTime
+        }
+        onClose={() => {
+          setShowRestSettings(false);
+          setExerciseForRestConfig(null);
+        }}
+        onSetRest={(selectedSecs, autoStart) => {
+          if (exerciseForRestConfig) {
+            const updated = [...exercises];
+            const foundIdx = updated.findIndex((e) => e.id === exerciseForRestConfig.id);
+            if (foundIdx >= 0) {
+              (updated[foundIdx] as any).restTimeSeconds = selectedSecs;
+              updateExercisesAndSync(updated);
+            }
+          }
+          if (autoStart) {
+            setRestSeconds(selectedSecs);
+            setContextRestSeconds(selectedSecs);
+            setIsRestPaused(false);
+            setContextIsRestPaused(false);
+          }
+        }}
+      />
 
       {/* Exercise Feedback & Question Modal (Teacher & Feed) */}
       {feedbackExercise && (
@@ -610,6 +657,14 @@ export const ActiveWorkoutModal: React.FC<ActiveWorkoutModalProps> = ({
               console.error(e);
             }
           }}
+        />
+      )}
+
+      {/* Exercise Biomechanical Detail Modal (Tabs: Resumo, Histórico, Instruções, Recordes) */}
+      {selectedExerciseForDetail && (
+        <ExerciseDetailModal
+          exercise={selectedExerciseForDetail}
+          onClose={() => setSelectedExerciseForDetail(null)}
         />
       )}
     </div>

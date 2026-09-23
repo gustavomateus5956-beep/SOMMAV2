@@ -17,10 +17,10 @@ export const SommaLogo: React.FC<SommaLogoProps> = ({
 }) => {
   const src =
     variant === 'icon'
-      ? '/brand/somma-symbol.svg'
+      ? '/brand/somma-plus-symbol-v2.svg'
       : variant === 'full-dark'
-        ? '/brand/somma-logo-horizontal-dark.svg'
-        : '/brand/somma-logo-horizontal-white.svg';
+        ? '/brand/somma-plus-logo-dark-v2.svg'
+        : '/brand/somma-plus-logo-white-v2.svg';
 
   return (
     <img

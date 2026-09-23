@@ -16,6 +16,7 @@ import {
   HeartPulse
 } from 'lucide-react';
 import { Professional } from '../types';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ProfessionalDetailModalProps {
   professional: Professional | null;
@@ -38,6 +39,8 @@ export const ProfessionalDetailModal: React.FC<ProfessionalDetailModalProps> = (
   currentNutriName = 'Dra. Camila Vasconcelos',
   currentFisioName = ''
 }) => {
+  useScrollLock(!!professional);
+
   if (!professional) return null;
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -61,8 +64,8 @@ export const ProfessionalDetailModal: React.FC<ProfessionalDetailModalProps> = (
   const isCompetingSlot = !isLinked && currentOccupant && currentOccupant !== professional.name;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-center items-end md:items-center p-0 md:p-4">
-      <div className="w-full max-w-[500px] h-[94vh] md:h-[90vh] bg-[#101419] border border-[#262a30] rounded-t-3xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-250">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-center items-end md:items-center p-0 md:p-4 overscroll-contain">
+      <div className="w-full max-w-[500px] h-[94vh] md:h-[90vh] bg-[#101419] border border-[#262a30] rounded-t-3xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-250 overscroll-contain">
         
         {/* Sticky Header Nav */}
         <div className="px-5 py-3.5 bg-[#181c21] border-b border-[#262a30] flex items-center justify-between z-10 shrink-0">

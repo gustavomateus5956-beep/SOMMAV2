@@ -40,9 +40,40 @@ export interface ExerciseSet {
   restTimeSeconds?: number;
 }
 
+export type ExerciseMediaProvider = 'exercisedb' | 'somma' | 'external';
+export type ExerciseSource = 'somma' | 'exercisedb' | 'external';
+
+export interface ExerciseExternalRef {
+  provider: ExerciseMediaProvider;
+  id: string;
+}
+
+export interface ExerciseMedia {
+  provider: ExerciseMediaProvider;
+  externalId?: string;
+  thumbnailUrl?: string;
+  gifUrl?: string;
+  imageUrl?: string;
+  videoUrl?: string;
+}
+
+export interface ExternalExerciseResult {
+  provider: 'exercisedb';
+  externalId: string;
+  name: string;
+  originalName?: string;
+  bodyPart?: string;
+  target?: string;
+  equipment?: string;
+  secondaryMuscles?: string[];
+  instructions?: string[];
+  gifUrl?: string;
+}
+
 export interface Exercise {
   id: string;
   name: string;
+  originalName?: string;
   muscleGroup: string;
   sets: ExerciseSet[];
   notes?: string;
@@ -52,6 +83,11 @@ export interface Exercise {
   professionalNote?: string; // Orientação específica do treinador/profissional
   instructions?: string;     // Instruções gerais de execução
   executionTips?: string[];  // Passos de execução detalhados
+  media?: ExerciseMedia;
+  source?: ExerciseSource;
+  external?: ExerciseExternalRef;
+  bodyPart?: string;
+  target?: string;
 }
 
 export interface LibraryExercise {
@@ -65,6 +101,7 @@ export interface LibraryExercise {
   defaultSets: number;
   defaultReps: number;
   defaultWeight: number;
+  media?: ExerciseMedia;
 }
 
 export interface RoutineCertificate {

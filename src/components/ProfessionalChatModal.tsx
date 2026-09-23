@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Send, ShieldCheck, CheckCheck, Paperclip, Dumbbell, Sparkles } from 'lucide-react';
 import { Professional } from '../types';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface ChatMessage {
   id: string;
@@ -24,6 +25,7 @@ export const ProfessionalChatModal: React.FC<ProfessionalChatModalProps> = ({
   onClose,
   onNavigateToPrescription
 }) => {
+  useScrollLock(true);
   const initialMessages: Record<string, ChatMessage[]> = {
     'dr-rodrigo': [
       {
@@ -147,8 +149,8 @@ export const ProfessionalChatModal: React.FC<ProfessionalChatModalProps> = ({
     : ['Aquecimento de ombro feito', 'Senti leve estalo no ombro direito', 'Agendar avaliação'];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-4">
-      <div className="w-full max-w-[500px] h-[94vh] md:h-[85vh] bg-[#101419] border border-[#262a30] rounded-t-3xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-end md:items-center justify-center p-0 md:p-4 overscroll-contain">
+      <div className="w-full max-w-[500px] h-[94vh] md:h-[85vh] bg-[#101419] border border-[#262a30] rounded-t-3xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200 overscroll-contain">
         
         {/* Chat Header */}
         <div className="px-4 py-3 bg-[#181c21] border-b border-[#262a30] flex items-center justify-between shrink-0">

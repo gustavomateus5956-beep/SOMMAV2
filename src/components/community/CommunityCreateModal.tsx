@@ -2,19 +2,17 @@ import React from 'react';
 import { 
   X, 
   Camera, 
-  Zap, 
-  Image as ImageIcon, 
-  Clock, 
   Check, 
   UploadCloud, 
   Plus 
 } from 'lucide-react';
+import { useScrollLock } from '../../hooks/useScrollLock';
 
 interface CommunityCreateModalProps {
   isOpen: boolean;
   onClose: () => void;
-  postType: 'feed' | 'routine';
-  onPostTypeChange: (type: 'feed' | 'routine') => void;
+  postType?: 'feed' | 'routine';
+  onPostTypeChange?: (type: 'feed' | 'routine') => void;
   newMuscleGroup: string;
   onMuscleGroupChange: (val: string) => void;
   newHighlightBadge: string;
@@ -32,8 +30,6 @@ interface CommunityCreateModalProps {
 export const CommunityCreateModal: React.FC<CommunityCreateModalProps> = ({
   isOpen,
   onClose,
-  postType,
-  onPostTypeChange,
   newMuscleGroup,
   onMuscleGroupChange,
   newHighlightBadge,
@@ -47,11 +43,13 @@ export const CommunityCreateModal: React.FC<CommunityCreateModalProps> = ({
   onSetPresetImage,
   onPublish
 }) => {
+  useScrollLock(isOpen);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="w-full max-w-md bg-[#181c21] border border-[#262a30] rounded-3xl p-5 flex flex-col gap-4 shadow-2xl animate-in zoom-in-95 max-h-[92vh] overflow-y-auto my-auto">
+    <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto overscroll-contain">
+      <div className="w-full max-w-md bg-[#181c21] border border-[#262a30] rounded-3xl p-5 flex flex-col gap-4 shadow-2xl animate-in zoom-in-95 max-h-[92vh] overflow-y-auto overscroll-contain my-auto">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between pb-2 border-b border-[#262a30]">
@@ -60,54 +58,19 @@ export const CommunityCreateModal: React.FC<CommunityCreateModalProps> = ({
               <Camera className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">Criar Nova Publicação</h3>
-              <p className="text-[11px] text-[#8c90a1]">Escolha entre post permanente no feed ou Rotina 24h</p>
+              <h3 className="text-base font-bold text-white">Compartilhar Evolução</h3>
+              <p className="text-[11px] text-[#8c90a1]">Publique seu treino ou shape no feed da comunidade</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label="Fechar modal"
             className="w-8 h-8 rounded-full bg-[#1c2025] hover:bg-[#262a30] text-[#c2c6d8] flex items-center justify-center cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
-
-        {/* Post Format Selector: Rotina (24h) vs Feed */}
-        <div className="grid grid-cols-2 gap-2 bg-[#101419] p-1.5 rounded-2xl border border-[#262a30]">
-          <button
-            type="button"
-            onClick={() => onPostTypeChange('routine')}
-            className={`py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              postType === 'routine'
-                ? 'bg-[#0066ff] text-white shadow-sm'
-                : 'text-[#8c90a1] hover:text-white'
-            }`}
-          >
-            <Zap className="w-3.5 h-3.5 text-[#ffb59d]" />
-            <span>Rotina (24h)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onPostTypeChange('feed')}
-            className={`py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-              postType === 'feed'
-                ? 'bg-[#0066ff] text-white shadow-sm'
-                : 'text-[#8c90a1] hover:text-white'
-            }`}
-          >
-            <ImageIcon className="w-3.5 h-3.5" />
-            <span>Post no Feed</span>
-          </button>
-        </div>
-
-        {/* Rotina 24h helper notice */}
-        {postType === 'routine' && (
-          <div className="bg-[#0066ff]/10 border border-[#0066ff]/30 rounded-xl p-2.5 flex items-center gap-2 text-[11px] text-[#b3c5ff]">
-            <Clock className="w-4 h-4 text-[#4edea3] shrink-0" />
-            <span>Esta rotina ficará ativa por <strong>24 horas</strong> no topo da comunidade para inspirar outros atletas.</span>
-          </div>
-        )}
 
         {/* Title / Muscle Target */}
         <div className="grid grid-cols-2 gap-2">
@@ -137,14 +100,10 @@ export const CommunityCreateModal: React.FC<CommunityCreateModalProps> = ({
         {/* Caption */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-[#c2c6d8]">
-            {postType === 'routine' ? 'Descrição da Rotina de Hoje' : 'Legenda da Foto'}
+            Legenda da Publicação
           </label>
           <textarea
-            placeholder={
-              postType === 'routine'
-                ? 'Ex: Rotina cumprida com foco em cadência lenta e contração máxima...'
-                : 'Compartilhe suas percepções de carga, intensidade ou conquista...'
-            }
+            placeholder="Compartilhe suas percepções de carga, intensidade ou conquista..."
             value={newCaption}
             onChange={(e) => onCaptionChange(e.target.value)}
             className="w-full h-20 p-3 rounded-xl bg-[#101419] border border-[#262a30] text-white text-xs placeholder:text-[#8c90a1] focus:border-[#0066ff] outline-none resize-none"
@@ -154,7 +113,7 @@ export const CommunityCreateModal: React.FC<CommunityCreateModalProps> = ({
         {/* Photo Upload Box */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-bold text-[#c2c6d8] flex items-center justify-between">
-            <span>Foto da Rotina ou Shape</span>
+            <span>Foto da Evolução ou Aparelho</span>
             {newPostImage && (
               <button
                 type="button"
@@ -241,7 +200,7 @@ export const CommunityCreateModal: React.FC<CommunityCreateModalProps> = ({
             className="flex-1 h-11 rounded-xl bg-[#0066ff] hover:bg-[#0054d6] text-xs font-bold text-white shadow-lg transition-all cursor-pointer flex items-center justify-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
-            <span>{postType === 'routine' ? 'Publicar Rotina 24h' : 'Publicar no Feed'}</span>
+            <span>Publicar no Feed</span>
           </button>
         </div>
 

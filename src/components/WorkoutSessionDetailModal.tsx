@@ -3,6 +3,7 @@ import { X, Calendar, Clock, Dumbbell, Award, Share2, Instagram, CheckCircle2, R
 import { WorkoutSessionRecord, Routine } from '../types';
 import { ExportCardModal, WorkoutExportData } from './ExportCardModal';
 import { getSetTypeConfig, SetTypeIcon } from '../data/setTypes';
+import { useScrollLock } from '../hooks/useScrollLock';
 
 interface WorkoutSessionDetailModalProps {
   session: WorkoutSessionRecord | null;
@@ -16,6 +17,7 @@ export const WorkoutSessionDetailModal: React.FC<WorkoutSessionDetailModalProps>
   onRepeatWorkout
 }) => {
   const [showExportModal, setShowExportModal] = useState(false);
+  useScrollLock(!!session);
 
   if (!session) return null;
 
@@ -33,8 +35,8 @@ export const WorkoutSessionDetailModal: React.FC<WorkoutSessionDetailModalProps>
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-end md:items-center p-0 md:p-4">
-      <div className="w-full max-w-[500px] max-h-[90vh] bg-[#101419] border border-[#262a30] rounded-t-2xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex justify-center items-end md:items-center p-0 md:p-4 overscroll-contain">
+      <div className="w-full max-w-[500px] max-h-[90vh] bg-[#101419] border border-[#262a30] rounded-t-2xl md:rounded-2xl flex flex-col overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-200 overscroll-contain">
         
         {/* Header */}
         <div className="px-5 py-4 bg-[#181c21] border-b border-[#262a30] flex items-center justify-between">
